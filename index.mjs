@@ -9,7 +9,6 @@ import 'dotenv/config'
 import { checker } from './scrap.mjs';
 
 // routes
-
 const app = express()
 
 app.use(cors({origin: '*'}))
@@ -27,16 +26,13 @@ app.get('*', async(req ,res) => {
 })
 
 io.on('connection', async(socket) => {    
-    // socket.on('test', () => console.log('first'))
     try {
-        
         const instancias = socket.handshake?.query['instancias']
-        
-        if(instancias == 0) return socket.disconnect() 
-            const roomsInstancias = [...Array(Number(instancias))].map((e, i) => e=++i).map(async(id) => await socket.join(id))
-            socket.on('[claro] postpago', async({phones, i, indexingPhones}) => {
-                checker({ phones, io, i, indexingPhones })
-            })
+        const roomsInstancias = [...Array(Number(instancias))].map((e, i) => e=++i).map(async(id) => await socket.join(id))
+        socket.on('[claro] postpago', async({phones, i, indexingPhones}) => {
+            checker({ phones, io, i, indexingPhones })
+        }
+    )
     } catch (error) {
         console.log(error);
     }

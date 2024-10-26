@@ -1,20 +1,24 @@
 import puppeteer from 'puppeteer'
 import axios from 'axios'
 import proxyChain from 'proxy-chain'
+
 export const checker = async({phones, io, i, indexingPhones}) => {
     const initBrowser = async() => {
-        // const {data} = await axios('http://192.168.1.42:4000/api/batch_get_ip?num=1&country=CO&state=Bogota D.C.&city=random&isp=random&zip=random&t=txt&port=50000&auth=0')
-        // const proxy = await proxyChain.anonymizeProxy({url: `http://${data}`, port: 3000})
+        let proxyInfo = null
+        do {
+            const {data} = await axios('https://info.proxy.abcproxy.com/extractUnlimitedProxyIp?regions=SAU&num=1&protocol=http&return_type=txt&lh=1')
+            proxyInfo = data
+        } while (proxyInfo?.data != null)
+
+        const proxy = await proxyChain.anonymizeProxy({url: `http://${proxyInfo}`, port: 3000})
         const browser = await puppeteer.launch({ headless: false,  
-            // args: [ `--proxy-server=${proxy}` ]
-            
+            args: [ `--proxy-server=${proxy}` ]
         })
         const page = await browser.newPage()
         page.setDefaultNavigationTimeout(0)
         page.setDefaultTimeout(0)
         await page.goto('https://portalpagos.claro.com.co/phrame.php?action=despliegue_personal&clase=vistasclaro&metodo=pantalla_inicio&empresa=claro#no-back-button')
         io.to(i).emit('[claro] exectMsg', `Instancia ${i} ejecutandose....`)
-        await page.waitForNavigation()
         await page.waitForSelector('h1')
         const ifAcessDenied = await page.$('h1')
         const acessDeniedText = await page.evaluate((e) => e?.innerText, ifAcessDenied)

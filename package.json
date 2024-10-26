@@ -4,7 +4,7 @@
   "description": "\"# server-checker-claro\"",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "esbuild ./index.mjs --bundle --legal-comments=none --format=esm --minify --platform=node --packages=external --outdir=build"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
   "dependencies": {
     "axios": "^1.7.7",
     "proxy-chain": "^2.5.4",
-    "puppeteer": "^23.6.0"
+    "puppeteer": "^23.6.0",
+    "uuid": "^10.0.0"
   }
 }
